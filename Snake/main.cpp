@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -23,7 +22,7 @@ void inicializarTablero(char tablero[FILAS][COLUMNAS], position &cabezaPos) {
     cabezaPos.x = FILAS / 2;
     cabezaPos.y = COLUMNAS / 2;
 
-    tablero[cabezaPos.x][cabezaPos.y] = 'X';
+    tablero[cabezaPos.x][cabezaPos.y] = CABEZA_SERPIENTE;
 }
 void printTablero(char tablero[FILAS][COLUMNAS]) {
 
@@ -54,30 +53,65 @@ void printTablero(char tablero[FILAS][COLUMNAS]) {
 }
 
 
-void movimiento(position &cabezaSerpiente, char tablero[FILAS][COLUMNAS]) {
-        for (int i = 0; i < FILAS; i++) {
-            for (int j = 0; j < COLUMNAS; j++) {
-                tablero[i][j] = ' ';
-            }
+void movimiento(position &cabezaSerpiente, char tablero[FILAS][COLUMNAS], bool &pressW, bool &pressA, bool &pressS, bool &pressD) {
+
+        if (IsWPressed()) {
+            pressW = true;
+            pressA = false;
+            pressS = false;
+            pressD = false;
         }
 
-        if (IsWPressed()) cabezaSerpiente.x--;
-        else if (IsAPressed()) cabezaSerpiente.y--;
-        else if (IsSPressed()) cabezaSerpiente.x++;
-        else if (IsDPressed()) cabezaSerpiente.y++;
+        if (IsAPressed()) {
+            pressW = false;
+            pressA = true;
+            pressS = false;
+            pressD = false;
+        }
+        if (IsSPressed()) {
+            pressW = false;
+            pressA = false;
+            pressS = true;
+            pressD = false;
+        }
+        if (IsDPressed()) {
+            pressW = false;
+            pressA = false;
+            pressS = false;
+            pressD = true;
+        }
 
-        tablero[cabezaSerpiente.x][cabezaSerpiente.y] = 'X';
+            if (pressW){
+                cabezaSerpiente.x--;
+            }
+            if (pressA){
+                cabezaSerpiente.y--;
+            }
+            if (pressS){
+                cabezaSerpiente.x++;
+            }
+            if (pressD){ 
+                cabezaSerpiente.y++;
+            }
+    
+            for (int i = 0; i < FILAS; i++) {
+                for (int j = 0; j < COLUMNAS; j++) {
+                    tablero[i][j] = ' ';
+                }
+            }
+
+            tablero[cabezaSerpiente.x][cabezaSerpiente.y] = CABEZA_SERPIENTE;
     }
 
 bool margenes(bool &GameOver, position cabezaSerpiente, char tablero[FILAS][COLUMNAS]) {
     for (int i = 0; i < FILAS; i++) {
         for (int j = 0; j < COLUMNAS; j++) {
 
-            if (cabezaSerpiente.x < tablero[0][j] ) {
-                GameOver = false;
+            if (cabezaSerpiente.x == FILAS -1 || 0 ) {
+                GameOver = true;
             }
-            else if (cabezaSerpiente.y < tablero[i][0]) {
-                GameOver = false;
+            else if (cabezaSerpiente.y == COLUMNAS -1 || 0) { 
+                GameOver = true;
             }    
         }
     }
@@ -85,7 +119,10 @@ bool margenes(bool &GameOver, position cabezaSerpiente, char tablero[FILAS][COLU
 }
 
 int main() {
-
+    bool pressW = false;
+    bool pressA = false;
+    bool pressS = false;
+    bool pressD = false;
     bool GameOver = false;
     position cabezaSerpiente;
 
@@ -98,8 +135,8 @@ int main() {
 
         system("cls");  
         printTablero(tablero);
-        movimiento(cabezaSerpiente, tablero);
-        margenes(GameOver, cabezaSerpiente, tablero);
+        movimiento(cabezaSerpiente, tablero, pressW, pressA, pressS, pressD);
+
         //Sleep main thread to control game speed execution
         std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_RATE));
 
