@@ -2,6 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <time.h>
+#include <vector>
 #include "const.h"
 #include "keyboard.h"
 using namespace std;
@@ -148,6 +149,17 @@ void generarManzana(position &manzanaRand, char tablero[FILAS][COLUMNAS]) {
             }
 }
 
+void cuerpoSerpiente(position cabezaSerpiente, position manzana, char tablero[FILAS][COLUMNAS]) {
+    vector <char> cuerpoSerpiente;
+    if (cabezaSerpiente.x == manzana.x && cabezaSerpiente.y == manzana.y) {
+
+        cuerpoSerpiente.push_back(CUERPO_SERPIENTE);
+        tablero[cabezaSerpiente.x][cabezaSerpiente.y] = CUERPO_SERPIENTE;
+
+    }
+
+}
+
 int main() {
     srand(time(NULL));
 
@@ -174,7 +186,7 @@ int main() {
 
         if (!GameOver) tablero[cabezaSerpiente.x][cabezaSerpiente.y] = CABEZA_SERPIENTE;
        
-         
+        cuerpoSerpiente(cabezaSerpiente, manzana, tablero);
     
         //Sleep main thread to control game speed execution
         std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_RATE));
