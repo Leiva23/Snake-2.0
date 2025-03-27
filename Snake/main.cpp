@@ -14,7 +14,7 @@ struct position {
 
 };
 
-void inicializarTablero(char tablero[FILAS][COLUMNAS], position &cabezaPos) {
+void inicializarTablero(char tablero[FILAS][COLUMNAS], position& cabezaPos, vector<position>& cuerpoSerpiente) {
     for (int i = 0; i < FILAS; i++) {
         for (int j = 0; j < COLUMNAS; j++) {
             tablero[i][j] = ' ';
@@ -25,7 +25,9 @@ void inicializarTablero(char tablero[FILAS][COLUMNAS], position &cabezaPos) {
     cabezaPos.y = COLUMNAS / 2;
 
     tablero[cabezaPos.x][cabezaPos.y] = CABEZA_SERPIENTE;
+    cuerpoSerpiente.push_back(cabezaPos);
 }
+
 void printTablero(char tablero[FILAS][COLUMNAS]) {
 
     for (int i = 0; i < COLUMNAS + 2; i++) {
@@ -37,12 +39,12 @@ void printTablero(char tablero[FILAS][COLUMNAS]) {
         for (int j = 0; j < COLUMNAS; j++) {
 
             if (j == 0) {
-                cout << LIN_HOR; 
+                cout << LIN_HOR;
             }
             cout << tablero[i][j];
 
             if (j == COLUMNAS - 1) {
-                 cout << LIN_HOR; 
+                cout << LIN_HOR;
             }
         }
         cout << endl;
@@ -54,83 +56,83 @@ void printTablero(char tablero[FILAS][COLUMNAS]) {
     cout << endl;
 }
 
+void movimiento(position& cabezaSerpiente, char tablero[FILAS][COLUMNAS], bool& pressW, bool& pressA, bool& pressS, bool& pressD) {
 
-void movimiento(position &cabezaSerpiente, char tablero[FILAS][COLUMNAS], bool &pressW, bool &pressA, bool &pressS, bool &pressD) {
+    if (IsWPressed() && !pressS) {
+        pressW = true;
+        pressA = false;
+        pressS = false;
+        pressD = false;
+    }
 
-        if (IsWPressed() && !pressS) {
-            pressW = true;
-            pressA = false;
-            pressS = false;
-            pressD = false;
-        }
+    if (IsAPressed() && !pressD) {
+        pressW = false;
+        pressA = true;
+        pressS = false;
+        pressD = false;
+    }
+    if (IsSPressed() && !pressW) {
+        pressW = false;
+        pressA = false;
+        pressS = true;
+        pressD = false;
+    }
+    if (IsDPressed() && !pressA) {
+        pressW = false;
+        pressA = false;
+        pressS = false;
+        pressD = true;
+    }
 
-        if (IsAPressed() && !pressD) {
-            pressW = false;
-            pressA = true;
-            pressS = false;
-            pressD = false;
-        }
-        if (IsSPressed() && !pressW) {
-            pressW = false;
-            pressA = false;
-            pressS = true;
-            pressD = false;
-        }
-        if (IsDPressed() && !pressA) {
-            pressW = false;
-            pressA = false;
-            pressS = false;
-            pressD = true;
-        }
+    if (pressW) {
+        cabezaSerpiente.x--;
+    }
+    if (pressA) {
+        cabezaSerpiente.y--;
+    }
+    if (pressS) {
+        cabezaSerpiente.x++;
+    }
+    if (pressD) {
+        cabezaSerpiente.y++;
+    }
 
-        if (pressW){
-            cabezaSerpiente.x--;
-        }
-        if (pressA){
-            cabezaSerpiente.y--;
-        }
-        if (pressS){
-            cabezaSerpiente.x++;
-        }
-        if (pressD){
-            cabezaSerpiente.y++;
-        }
-    
-        for (int i = 0; i < FILAS; i++) {
-            for (int j = 0; j < COLUMNAS; j++) {
+    for (int i = 0; i < FILAS; i++) {
+        for (int j = 0; j < COLUMNAS; j++) {
 
-                if (tablero[i][j] == MANZANA) {
-                    cout << tablero[i][j];
-                }
-                else {
-                    tablero[i][j] = ' ';
-                }
+            if (tablero[i][j] == MANZANA) {
+                cout << tablero[i][j];
+            }
+            else {
+                tablero[i][j] = ' ';
             }
         }
     }
-
-bool margenes( position cabezaSerpiente) {
-
-            if (cabezaSerpiente.x < 0) {
-                return true;
-            }
-            
-            else if (cabezaSerpiente.y < 0) { 
-                return true;
-            }    
-            
-            else if (cabezaSerpiente.x >= FILAS) {
-                return true;
-            }
-            else if (cabezaSerpiente.y >= COLUMNAS) { 
-                return true;
-            }
-        
-    
-        return false;
 }
 
-void generarManzana(position &manzanaRand, char tablero[FILAS][COLUMNAS]) { 
+
+bool margenes(position cabezaSerpiente) {
+
+    if (cabezaSerpiente.x < 0) {
+        return true;
+    }
+
+    else if (cabezaSerpiente.y < 0) {
+        return true;
+    }
+
+    else if (cabezaSerpiente.x >= FILAS) {
+        return true;
+    }
+    else if (cabezaSerpiente.y >= COLUMNAS) {
+        return true;
+    }
+
+
+    return false;
+}
+
+void generarManzana(position& manzanaRand, char tablero[FILAS][COLUMNAS]) {
     bool manzana = false;
     for (int i = 0; i < FILAS; i++) {
         for (int j = 0; j < COLUMNAS; j++) {
@@ -141,20 +143,19 @@ void generarManzana(position &manzanaRand, char tablero[FILAS][COLUMNAS]) {
             }
         }
     }
-            if (!manzana) {        
-                manzanaRand.x = rand() % 20;
-                manzanaRand.y = rand() % 10;
+    if (!manzana) {
+        manzanaRand.x = rand() % 20;
+        manzanaRand.y = rand() % 10;
 
-                tablero[manzanaRand.x][manzanaRand.y] = MANZANA;
-            }
+        tablero[manzanaRand.x][manzanaRand.y] = MANZANA;
+    }
 }
 
-void cuerpoSerpiente(position cabezaSerpiente, position manzana, char tablero[FILAS][COLUMNAS]) {
+void crecerSerpiente(position cabezaSerpiente, position manzana, char tablero[FILAS][COLUMNAS]) {
     vector <char> cuerpoSerpiente;
     if (cabezaSerpiente.x == manzana.x && cabezaSerpiente.y == manzana.y) {
 
-        cuerpoSerpiente.push_back(CUERPO_SERPIENTE);
-        tablero[cabezaSerpiente.x][cabezaSerpiente.y] = CUERPO_SERPIENTE;
+        // cuerpoSerpiente.push_back();
 
     }
 
@@ -170,28 +171,28 @@ int main() {
     bool GameOver = false;
     position cabezaSerpiente;
     position manzana;
+    vector <position> cuerpoSerpiente;
     char tablero[FILAS][COLUMNAS];
-    inicializarTablero(tablero, cabezaSerpiente);
+    inicializarTablero(tablero, cabezaSerpiente, cuerpoSerpiente);
 
 
     //While game is not over execute game loop
-    while (!GameOver) { 
+    while (!GameOver) {
 
-        system("cls");  
+        system("cls");
         printTablero(tablero);
         generarManzana(manzana, tablero);
-        movimiento(cabezaSerpiente, tablero, pressW, pressA, pressS, pressD);
-        
+        movimiento(cuerpoSerpiente, tablero, pressW, pressA, pressS, pressD);
         GameOver = margenes(cabezaSerpiente);
 
         if (!GameOver) tablero[cabezaSerpiente.x][cabezaSerpiente.y] = CABEZA_SERPIENTE;
-       
-        cuerpoSerpiente(cabezaSerpiente, manzana, tablero);
-    
+
+        crecerSerpiente(cabezaSerpiente, manzana, tablero);
+
         //Sleep main thread to control game speed execution
         std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_RATE));
 
     }
-    
+
     return 0;
 }
